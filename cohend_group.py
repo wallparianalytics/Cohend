@@ -10,6 +10,36 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
+
+def generar_varlist_rango(
+    pre_pat: str,
+    post_pat: str,
+    inicio: int,
+    fin: int,
+    df: pd.DataFrame | None = None,
+) -> list[str]:
+    """Genera una lista de variables consecutivas para ``cohend_group``.
+
+    Los patrones deben contener ``{n}`` donde se insertará el número de la
+    pregunta. Si se proporciona ``df`` se verifica que todas las columnas
+    existan y se lanza ``ValueError`` en caso contrario.
+    """
+
+    varlist: list[str] = []
+    faltantes: list[str] = []
+    for i in range(inicio, fin + 1):
+        pre_var = pre_pat.format(n=i)
+        post_var = post_pat.format(n=i)
+        varlist.extend([pre_var, post_var])
+        if df is not None:
+            if pre_var not in df.columns:
+                faltantes.append(pre_var)
+            if post_var not in df.columns:
+                faltantes.append(post_var)
+    if df is not None and faltantes:
+        raise ValueError("No se encontraron las columnas: " + ", ".join(faltantes))
+    return varlist
+
 def cohend_group(
     df: pd.DataFrame,
     varlist: list[str],
@@ -162,16 +192,20 @@ def cohend_group(
     return result_df
 
 # Ejemplo minimo de uso
-# varlist de variables pre y post
-# varlist de variables pre y post
-varlist_ejemplo = ["ce_p1", "ce_p2", "cs_i1_p1", "cs_i1_p2"]
-# Llamada a la funcion
+# --------------------
+# Generar lista de variables para preguntas 1 a 10 con patrones
+# "pre_p{n}" y "post_p{n}".
+# varlist_ejemplo = generar_varlist_rango(
+#     "pre_p{n}",
+#     "post_p{n}",
+#     inicio=1,
+#     fin=10,
+#     df=df,
+# )
 # resultados = cohend_group(
 #     df,
 #     varlist=varlist_ejemplo,
 #     group="macro",
 #     method="dav",
-#     filename="cohend_resultados.xlsx",
-#     sheet_name="resultados",
 # )
 # print(resultados)
