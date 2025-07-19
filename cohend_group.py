@@ -163,8 +163,32 @@ def cohend_group(
 
     # 7. Exportar a Excel. Se intenta usar xlsxwriter y, si no está
     # disponible, se recurre a openpyxl.
+
+    def _resumir(vars_list: list[str]) -> str:
+        """Devuelve un rango compacto si los nombres terminan en números consecutivos."""
+        if not vars_list:
+            return ""
+        import re
+
+        m = re.match(r"(.*?)(\d+)$", vars_list[0])
+        if not m:
+            return ", ".join(vars_list)
+        prefix = m.group(1)
+        nums = []
+        for v in vars_list:
+            m2 = re.match(rf"{re.escape(prefix)}(\d+)$", v)
+            if not m2:
+                return ", ".join(vars_list)
+            nums.append(int(m2.group(1)))
+        nums_sorted = sorted(nums)
+        if nums_sorted == list(range(nums_sorted[0], nums_sorted[-1] + 1)):
+            return f"{prefix}{nums_sorted[0]}-{prefix}{nums_sorted[-1]}"
+        return ", ".join(vars_list)
+
+    pre_desc = _resumir(prevars)
+    post_desc = _resumir(postvars)
     titulo = (
-        f"Cohen d – Variables: {', '.join(prevars)}, {', '.join(postvars)} (método={method})"
+        f"Cohen d – Variables: {pre_desc}, {post_desc} (método={method})"
     )
 
     try:
