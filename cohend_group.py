@@ -147,7 +147,10 @@ def cohend_group(
     with pd.ExcelWriter(filename, engine=engine) as writer:
         result_df.to_excel(writer, sheet_name="resultados", startrow=2, index=False)
         worksheet = writer.sheets["resultados"]
-        worksheet.write("A1", titulo)
+        if engine == "xlsxwriter":
+            worksheet.write("A1", titulo)
+        else:  # openpyxl
+            worksheet["A1"] = titulo
 
     print(f"Archivo guardado: {filename}")
 
