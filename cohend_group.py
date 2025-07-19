@@ -215,17 +215,11 @@ def cohend_group(
 
     return result_df
 
-# Ejemplo minimo de uso
-# --------------------
-# Generar lista de variables para preguntas 1 a 10 con patrones
-# "pre_p{n}" y "post_p{n}".
-# varlist_ejemplo = generar_varlist_rango(
-#     "pre_p{n}",
-#     "post_p{n}",
-#     inicio=1,
-#     fin=10,
-#     df=df,
-# )
+# Ejemplo mínimo de uso
+# ---------------------
+# Seleccionamos explícitamente la lista de variables PRE y POST
+# (debe tener un número par de elementos).
+# varlist_ejemplo = ["ce_p1", "ce_p2", "cs_i1_p1", "cs_i1_p2"]
 # resultados = cohend_group(
 #     df,
 #     varlist=varlist_ejemplo,
