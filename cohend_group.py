@@ -14,7 +14,9 @@ def cohend_group(
     df: pd.DataFrame,
     varlist: list[str],
     group: str,
-    method: str = "dz"
+    method: str = "dz",
+    filename: str = "cohend_resultados.xlsx",
+    sheet_name: str = "resultados",
 ) -> pd.DataFrame:
     """Calcula Cohen d para variables binarias pre y post por grupo.
 
@@ -28,6 +30,10 @@ def cohend_group(
         Nombre de la columna de grupo.
     method : str, optional
         Metodo para el denominador ("dz", "dav" o "drm"), por defecto "dz".
+    filename : str, optional
+        Nombre del archivo Excel de salida. Por defecto "cohend_resultados.xlsx".
+    sheet_name : str, optional
+        Nombre de la hoja en el archivo Excel. Por defecto "resultados".
 
     Returns
     -------
@@ -127,7 +133,6 @@ def cohend_group(
 
     # 7. Exportar a Excel. Se intenta usar xlsxwriter y, si no está
     # disponible, se recurre a openpyxl.
-    filename = "cohend_resultados.xlsx"
     titulo = (
         f"Cohen d – Variables: {', '.join(prevars)}, {', '.join(postvars)} (método={method})"
     )
@@ -145,8 +150,8 @@ def cohend_group(
             ) from e
 
     with pd.ExcelWriter(filename, engine=engine) as writer:
-        result_df.to_excel(writer, sheet_name="resultados", startrow=2, index=False)
-        worksheet = writer.sheets["resultados"]
+        result_df.to_excel(writer, sheet_name=sheet_name, startrow=2, index=False)
+        worksheet = writer.sheets[sheet_name]
         if engine == "xlsxwriter":
             worksheet.write("A1", titulo)
         else:  # openpyxl
@@ -158,7 +163,15 @@ def cohend_group(
 
 # Ejemplo minimo de uso
 # varlist de variables pre y post
+# varlist de variables pre y post
 varlist_ejemplo = ["ce_p1", "ce_p2", "cs_i1_p1", "cs_i1_p2"]
 # Llamada a la funcion
-# resultados = cohend_group(df, varlist=varlist_ejemplo, group="macro", method="dav")
+# resultados = cohend_group(
+#     df,
+#     varlist=varlist_ejemplo,
+#     group="macro",
+#     method="dav",
+#     filename="cohend_resultados.xlsx",
+#     sheet_name="resultados",
+# )
 # print(resultados)
